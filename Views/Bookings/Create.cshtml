@@ -4,49 +4,64 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Create</h2>
+<h2>Make a Booking</h2>
 
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("create", "Bookings", FormMethod.Post, new { id = "bookingForm" }))
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>Booking</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.UserId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.UserId, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
-            </div>
-        </div>
+<div class="form-horizontal">
+    <hr />
+    @{ 
+        var queryStringDate = string.Empty;
+        DateTime parsedDate;
+        if (DateTime.TryParse(Request.QueryString["desiredDate"], out parsedDate))
+        {
+            queryStringDate = parsedDate.ToString("yyyy-MM-dd");
+        }
+    }
+    
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Time, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10 input-group date" id="datetimepicker1" data-target-input="nearest">
-                @Html.TextBoxFor(model => model.Time, new { @class = "form-control datetimepicker-input", @data_target = "#datetimepicker1" })
-                <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                </div>
-                @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.UploadedFile, "Upload a Referral")
-            <input type="file" name="UploadedFile" />
-        </div>
-
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+    <!-- Date input -->
+    <div class="form-group">
+        @Html.LabelFor(model => model.Time, "Date", new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @if (!string.IsNullOrEmpty(queryStringDate))
+            {
+                @Html.TextBox("bookingDate", queryStringDate, new { @class = "form-control datepicker", id = "bookingDate", type = "date" })
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.Time, "{0:yyyy-MM-dd}", new { @class = "form-control datepicker", id = "bookingDate", type = "date", placeholder = "{0:yyyy-MM-dd}" })
+            }
+            @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
         </div>
     </div>
+
+    <div class="form-group">
+        @Html.Label("Time", new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("BookingTime", ViewBag.AvailableTimes as SelectList, new { @class = "form-control", id = "bookingTime" })
+            @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    @Html.HiddenFor(model => model.Time, new { id = "combinedDateTime" })
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.UploadedFile, "Upload a Referral")
+        <input type="file" name="UploadedFile" />
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-primary" id="submit"/>
+        </div>
+    </div>
+</div>
 }
 
 <div>
@@ -54,13 +69,34 @@
 </div>
 
 
-
 @section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryui")
+    @Styles.Render("~/Content/cssjqryUi")
     @Scripts.Render("~/bundles/jqueryval")
 
     <script type="text/javascript">
-        $(function () {
-            $('#datetimepicker1').datetimepicker();
+        $(document).ready(function () {
+            $('.datepicker').datepicker({
+                dateFormat: "dd/M/yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-60:+0",
+                onSelect: function(dateText) {
+                    // Reload the page with the selected date to update available times
+                    window.location.href = '@Url.Action("Create")?desiredDate=' + dateText;
+                 }
+            });
         });
+
+        document.getElementById("bookingForm").addEventListener("submit", function(e) {
+        var dateValue = document.getElementById("bookingDate").value;
+        var timeValue = document.getElementById("bookingTime").value;
+        var combinedDateTime = new Date(dateValue + " " + timeValue);
+        document.getElementById("combinedDateTime").value = combinedDateTime.toISOString();
+
+    });
     </script>
+
 }
+

@@ -112,3 +112,4 @@ C:\Users\zacwh\code\FIT5032\MediSight_Project\bin\SendGrid.dll
 C:\Users\zacwh\code\FIT5032\MediSight_Project\bin\StarkbankEcdsa.dll
 C:\Users\zacwh\code\FIT5032\MediSight_Project\bin\SendGrid.pdb
 C:\Users\zacwh\code\FIT5032\MediSight_Project\bin\SendGrid.xml
+C:\Users\zacwh\code\FIT5032\MediSight_Project\obj\Debug\MediSight_Project.Migrations.UpdateUserIdType.resources

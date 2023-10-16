@@ -22,6 +22,19 @@ namespace MediSight_Project.Controllers
 
         private SendGridService es = new SendGridService();
 
+        List<TimeSpan> possibleBookingTimes = new List<TimeSpan>
+                {
+                    new TimeSpan(9, 0, 0),
+                    new TimeSpan(10, 0, 0),
+                    new TimeSpan(11, 0, 0),
+                    new TimeSpan(12, 0, 0),
+                    new TimeSpan(13, 0, 0),
+                    new TimeSpan(14, 0, 0),
+                    new TimeSpan(15, 0, 0),
+                    new TimeSpan(16, 0, 0),
+                    new TimeSpan(17, 0, 0)
+                };
+
         // GET: Bookings
         [Authorize(Roles = "Admin")]
         public ActionResult Index()
@@ -46,8 +59,18 @@ namespace MediSight_Project.Controllers
         }
 
         // GET: Bookings/Create
-        public ActionResult Create()
+        public ActionResult Create(DateTime? desiredDate)
         {
+            if (desiredDate.HasValue)
+            {
+                var availableTimes = GetAvailableTimesForDate(desiredDate.Value);
+                ViewBag.AvailableTimes = new SelectList(availableTimes);
+            }
+            else
+            {
+                ViewBag.AvailableTimes = new SelectList(new List<TimeSpan>());
+            }
+
             return View();
         }
 
@@ -61,10 +84,13 @@ namespace MediSight_Project.Controllers
             
             if (ModelState.IsValid)
             {
+                string currentUserId = User.Identity.GetUserId();
+                booking.UserId = currentUserId;
+               
                 if (booking.UploadedFile != null && booking.UploadedFile.ContentLength > 0)
                 {
                     var fileName = Path.GetFileName(booking.UploadedFile.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Uploads/"), fileName);
+                    var path = Path.Combine(Server.MapPath("~/UploadedFiles/"), fileName);
                     booking.UploadedFile.SaveAs(path);
                 }
                 db.Bookings.Add(booking);
@@ -76,6 +102,18 @@ namespace MediSight_Project.Controllers
             }
 
             return View(booking);
+        }
+
+        private List<TimeSpan> GetAvailableTimesForDate(DateTime date)
+        {
+
+            var bookingsForDay = db.Bookings
+                                   .Where(b => DbFunctions.TruncateTime(b.Time) == date.Date)
+                                   .ToList();
+
+            var bookedTimesForDay = bookingsForDay.Select(b => b.Time.TimeOfDay).ToList();
+
+            return possibleBookingTimes.Except(bookedTimesForDay).ToList();
         }
 
         // GET: Bookings/Edit/5

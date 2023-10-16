@@ -2,6 +2,7 @@
 using SendGrid;
 using System;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace MediSight_Project.Services
 {
@@ -16,7 +17,12 @@ namespace MediSight_Project.Services
                 var from = new EmailAddress("test@email.com", "Test Emmail");
                 var to = new EmailAddress(toEmail, toName);
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-                var response = await client.SendEmailAsync(msg).ConfigureAwait(false);
+                
+                using (var fileStream = File.OpenRead("~/favicon.ico"))
+                {
+                    await msg.AddAttachmentAsync("file.txt", fileStream);
+                    var response = await client.SendEmailAsync(msg).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {

@@ -9,7 +9,7 @@ namespace MediSight_Project.Models
     public class Booking
     {
         public int BookingId { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public DateTime Time { get; set; }
 
         [NotMapped]
