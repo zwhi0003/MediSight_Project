@@ -43,9 +43,16 @@
     <div class="form-group">
         @Html.Label("Time", new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.DropDownList("BookingTime", ViewBag.AvailableTimes as SelectList, new { @class = "form-control", id = "bookingTime" })
-            @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
-        </div>
+            @if (ViewBag.AvailableTimes != null)
+            {
+                @Html.DropDownList("BookingTime", ViewBag.AvailableTimes as SelectList, new { @class = "form-control", id = "bookingTime" })
+                @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
+            }
+            else
+            {
+                @Html.DropDownList("BookingTime", new SelectList(new List<SelectListItem>()), new { @class = "form-control", id = "bookingTime" })
+            }
+            </div>
     </div>
 
     @Html.HiddenFor(model => model.Time, new { id = "combinedDateTime" })

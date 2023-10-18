@@ -1,0 +1,45 @@
+﻿@using MediSight_Project.Models
+@model UserViewRoleFilter
+
+@{
+    ViewBag.Title = "List of Accounts";
+}
+
+<h2>List of Accounts</h2>
+
+
+@using (Html.BeginForm("Index", "Account", FormMethod.Get))
+{
+    <div class="form-group">
+        <label for="SelectedRole">Filter by Role:</label>
+        @Html.DropDownListFor(m => m.SelectedRole, Model.Roles, "All Roles", new { @class = "form-control", onchange = "this.form.submit();" })
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = user.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = user.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = user.Id })
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+

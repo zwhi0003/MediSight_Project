@@ -9,6 +9,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MediSight_Project.Models;
+using System.Data.Entity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace MediSight_Project.Controllers
 {
@@ -17,6 +19,8 @@ namespace MediSight_Project.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         public AccountController()
         {
@@ -51,6 +55,28 @@ namespace MediSight_Project.Controllers
                 _userManager = value;
             }
         }
+
+        //
+        // GET: /Account/Index
+        public ActionResult Index(string selectedRole)
+        {
+            var users = db.Users
+        .Where(u => string.IsNullOrEmpty(selectedRole) ||
+                    u.Roles.Join(db.Roles, userRole => userRole.RoleId, role => role.Id, (userRole, role) => role.Name).Contains(selectedRole))
+        .ToList();
+
+            var roles = db.Roles.Select(r => r.Name).ToList();
+
+            var viewModel = new UserViewRoleFilter
+            {
+                Users = users,
+                Roles = new SelectList(roles),
+                SelectedRole = selectedRole
+            };
+
+            return View(viewModel);
+        }
+    
 
         //
         // GET: /Account/Login
@@ -155,6 +181,7 @@ namespace MediSight_Project.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    UserManager.AddToRole(user.Id, "Patient");
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771

@@ -32,5 +32,7 @@ namespace MediSight_Project.Models
 
         // custom db set for models
         public DbSet<Booking> Bookings { get; set; }
+
+        public System.Data.Entity.DbSet<MediSight_Project.Models.Review> Reviews { get; set; }
     }
 }

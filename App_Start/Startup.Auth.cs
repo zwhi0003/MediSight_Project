@@ -58,11 +58,11 @@ namespace MediSight_Project
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "698183739936-hrds13rv5q2eqmt0bc44dve6600kk180.apps.googleusercontent.com",
+                ClientSecret = "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"
+            });
         }
     }
 }

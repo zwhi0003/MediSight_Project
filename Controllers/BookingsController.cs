@@ -11,7 +11,8 @@ using MediSight_Project.Models;
 using System.Threading.Tasks;
 using MediSight_Project.Services;
 using Microsoft.AspNet.Identity;
-
+using Microsoft.AspNet.Identity.EntityFramework;
+using SendGrid.Helpers.Mail.Model;
 
 namespace MediSight_Project.Controllers
 {
@@ -22,7 +23,7 @@ namespace MediSight_Project.Controllers
 
         private SendGridService es = new SendGridService();
 
-        List<TimeSpan> possibleBookingTimes = new List<TimeSpan>
+        private List<TimeSpan> possibleBookingTimes = new List<TimeSpan>
                 {
                     new TimeSpan(9, 0, 0),
                     new TimeSpan(10, 0, 0),
@@ -39,7 +40,29 @@ namespace MediSight_Project.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
-            return View(db.Bookings.ToList());
+
+            var bookings = db.Bookings.ToList();
+            var userNames = new Dictionary<string, string>();
+
+            foreach (var booking in bookings)
+            {
+                var user = db.Users.Find(booking.UserId); 
+                if (user != null)
+                {
+                    userNames[booking.UserId] = user.UserName;
+                }
+                else
+                {
+                    userNames[booking.UserId] = "User Not Found"; 
+                }
+            }
+            var viewModel = new BookingUserView
+            {
+                Bookings = bookings,
+                UserNames = userNames
+            };
+
+            return View(viewModel);
         }
 
         // GET: Bookings/Details/5
@@ -81,7 +104,7 @@ namespace MediSight_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "BookingId,UserId,Time")] Booking booking)
         {
-            
+            MvcHandler.DisableMvcResponseHeader = true;
             if (ModelState.IsValid)
             {
                 string currentUserId = User.Identity.GetUserId();
@@ -96,8 +119,16 @@ namespace MediSight_Project.Controllers
                 db.Bookings.Add(booking);
                 db.SaveChanges();
 
-                await es.SendEmail("recipient@example.com", "Recipient Name", "Booking Confirmation", "Your booking is confirmed.", "<strong>Your booking is confirmed.</strong>");
+                string response = await es.SendEmail(
+                    "MediSight", 
+                    "MediSight@exammple.com", 
+                    "Patient", 
+                    User.Identity.GetUserName(),
+                    "Booking Created",
+                    $"<html><head></head><body><p>Hello,</p>Your booking has been created for {booking.Time.ToString()} .</p></body></html>"
+                    );
 
+                
                 return RedirectToAction("Index");
             }
 
@@ -131,6 +162,7 @@ namespace MediSight_Project.Controllers
             }
             return View(booking);
         }
+
 
         // POST: Bookings/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
