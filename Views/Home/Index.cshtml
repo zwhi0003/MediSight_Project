@@ -2,32 +2,118 @@
     ViewBag.Title = "Home Page";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
+<main class="video-landing-page">
+    <video playsinline autoplay muted loop id="bgvid">
+        <source src="~/backgroundVid.mp4" type="video/mp4">
+    </video>
+
+    <section class="overlay-content container">
+        <h1 id="title">Book an Appintment</h1>
+        <p class="lead">We can schedule appointments between 9 and 5pm daily</p>
+        @Html.ActionLink("Book >>", "Create", "Bookings", new { area = "" }, new { @class = "btn btn-primary btn-lg" })
+
     </section>
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+    <div class="additional-info container">
+        <div class="row">
+            <section class="col-sm-12 col-md-4">
+                <h2>What we do</h2>
+                <p>MediSight imaging provides medical imaging services for patients, specializing in x-ray imaging.</p>
+            </section>
+            <section class="col-sm-12 col-md-4">
+                <h2>Wide range of imaging types</h2>
+                <p>We provide advanced x-ray imaging services such as digital radiography, fluoroscopy and bone density imaging.</p>
+            </section>
+            <section class="col-sm-12 col-md-4">
+                <h2>Safety</h2>
+                <p>All of our imaging services are conducted with minimal radiation exposure ensuring patient safety and care. </p>
+            </section>
+        </div>
     </div>
 </main>
+
+ <style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        overflow: hidden;
+    }
+
+    .video-landing-page {
+        position: relative;
+        height: 100vh;
+    }
+
+     #bgvid {
+         position: fixed;
+         top: 50%;
+         left: 50%;
+         min-width: 100%;
+         min-height: 100%;
+         width: auto;
+         height: auto;
+         z-index: -100;
+         transform: translateX(-50%) translateY(-50%);
+         background-size: cover;
+     }
+
+
+     .overlay-content {
+         position: absolute;
+         top: 50%;
+         transform: translateY(-50%);
+         text-align: center;
+         color: #ffffff;
+         z-index: 1;
+         width: 100%;
+         padding-top: 40px;
+     }
+
+    .lead {
+        margin-bottom: 1em;
+    }
+
+    .btn-primary {
+        background-color: rgba(0, 123, 255, 0.9);
+    }
+
+    .additional-info {
+        padding-top: 40px;
+    }
+
+    .btn-outline-light {
+        border-color: #ffffff;
+        color: #ffffff;
+        background-color: transparent;
+    }
+
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    h2 {
+        color: #ffffff;
+        margin-bottom: 10px;
+        font-weight: 800;
+    }
+
+     h1 {
+         color: #ffffff;
+         margin-bottom: 10px;
+         font-weight: 800;
+     }
+
+     p {
+         color: rgba(255, 255, 255, 0.7);
+         font-weight: 800;
+     }
+
+
+    /* Media Query for mobile devices */
+    @@media (max-width: 768px) {
+     .overlay-content {
+         padding-top: 30rem;
+     }
+    }
+</style>

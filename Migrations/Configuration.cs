@@ -92,6 +92,19 @@
                     UserManager.AddToRole(user.Id, "Patient");
                 }
             }
+            var userP = UserManager.FindByEmail("patient@test.com");
+            
+            if (!context.Reviews.Any(r => r.UserId == userP.Id))
+            {
+               Review newReview = new Review();
+                newReview.ReviewText = "This was amazing";
+                newReview.Time = DateTime.Now;
+                newReview.ReviewRating = 5;
+                newReview.UserId = userP.Id;
+                context.Reviews.Add(newReview);
+                context.SaveChanges();
+            }
+            
         }
 }
 }

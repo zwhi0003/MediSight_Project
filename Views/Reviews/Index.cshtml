@@ -1,45 +1,227 @@
-﻿@model IEnumerable<MediSight_Project.Models.Review>
+﻿@model MediSight_Project.Models.ReviewUserView
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Hear from our customers</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.UserId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.RewiewText)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.RewiewRating)
-        </th>
-        <th></th>
-    </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.UserId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.RewiewText)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.RewiewRating)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ReviewId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ReviewId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ReviewId })
-        </td>
-    </tr>
-}
+<div id="reviews" class="review-section">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h4 class="m-0">Average Rating: @Model.AverageRating</h4>
+        <h4 class="m-0">@Model.Reviews.Count Reviews</h4>
+    </div>
+    @Html.ActionLink("Write a Review", "Create", "Reviews", new { area = "" }, new { @class = "btn btn-primary" })
 
-</table>
+</div>
+
+<div class="review-list">
+    <ul>
+        @foreach (var review in Model.Reviews)
+        {
+            <li>
+                <div class="d-flex">
+                    <div class="right">
+                        <h4>
+                            @{
+                                if (Model.UserNames.ContainsKey(review.UserId))
+                                {
+                                    @Model.UserNames[review.UserId]
+                                }
+                                else
+                                {
+                                    <span>User Not Found</span>
+                                }
+                            }
+                            <span class="gig-rating text-body-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1792 1792" width="15" height="15">
+                                    <path fill="currentColor"
+                                          d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z"></path>
+                                </svg>
+                                @review.ReviewRating
+                            </span>
+                        </h4>
+                        <div class="review-description">
+                            <p>
+                                @review.ReviewText
+                            </p>
+                        </div>
+                        <span class="publish py-3 d-inline-block w-100">Published @review.Time</span>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+</div>
+
+<style>
+
+    .review-list ul li .left span {
+        width: 32px;
+        height: 32px;
+        display: inline-block;
+    }
+
+    .review-list ul li .left {
+        flex: none;
+        max-width: none;
+        margin: 0 10px 0 0;
+    }
+
+        .review-list ul li .left span img {
+            border-radius: 50%;
+        }
+
+    .review-list ul li .right h4 {
+        font-size: 16px;
+        margin: 0;
+        display: flex;
+    }
+
+        .review-list ul li .right h4 .gig-rating {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+            color: #ffbf00;
+        }
+
+            .review-list ul li .right h4 .gig-rating svg {
+                margin: 0 4px 0 0px;
+            }
+
+    .country .country-flag {
+        width: 16px;
+        height: 16px;
+        vertical-align: text-bottom;
+        margin: 0 7px 0 0px;
+        border: 1px solid #fff;
+        border-radius: 50px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .country .country-name {
+        color: #95979d;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .review-list ul li {
+        border-bottom: 1px solid #dadbdd;
+        padding: 0 0 30px;
+        margin: 0 0 30px;
+    }
+
+        .review-list ul li .right {
+            flex: auto;
+        }
+
+        .review-list ul li .review-description {
+            margin: 20px 0 0;
+        }
+
+            .review-list ul li .review-description p {
+                font-size: 14px;
+                margin: 0;
+            }
+
+        .review-list ul li .publish {
+            font-size: 13px;
+            color: #95979d;
+        }
+
+    .review-section h4 {
+        font-size: 20px;
+        color: #222325;
+        font-weight: 700;
+    }
+
+    .review-section .stars-counters tr .stars-filter.fit-button {
+        padding: 6px;
+        border: none;
+        color: #4a73e8;
+        text-align: left;
+    }
+
+    .review-section .fit-progressbar-bar .fit-progressbar-background {
+        position: relative;
+        height: 8px;
+        background: #efeff0;
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        background-color: #ffffff;
+        ;
+        border-radius: 999px;
+    }
+
+    .review-section .stars-counters tr .star-progress-bar .progress-fill {
+        background-color: #ffb33e;
+    }
+
+    .review-section .fit-progressbar-bar .progress-fill {
+        background: #2cdd9b;
+        background-color: rgb(29, 191, 115);
+        height: 100%;
+        position: absolute;
+        left: 0;
+        z-index: 1;
+        border-radius: 999px;
+    }
+
+    .review-section .fit-progressbar-bar {
+        display: flex;
+        align-items: center;
+    }
+
+    .review-section .stars-counters td {
+        white-space: nowrap;
+    }
+
+    .review-section .stars-counters tr .progress-bar-container {
+        width: 100%;
+        padding: 0 10px 0 6px;
+        margin: auto;
+    }
+
+    .ranking h6 {
+        font-weight: 600;
+        padding-bottom: 16px;
+    }
+
+    .ranking li {
+        display: flex;
+        justify-content: space-between;
+        color: #95979d;
+        padding-bottom: 8px;
+    }
+
+    .review-section .stars-counters td.star-num {
+        color: #4a73e8;
+    }
+
+    .ranking li > span {
+        color: #62646a;
+        white-space: nowrap;
+        margin-left: 12px;
+    }
+
+    .review-section {
+        border-bottom: 1px solid #dadbdd;
+        padding-bottom: 24px;
+        margin-bottom: 34px;
+        padding-top: 64px;
+    }
+
+        .review-section select, .review-section .select2-container {
+            width: 188px !important;
+            border-radius: 3px;
+        }
+
+    ul, ul li {
+        list-style: none;
+        margin: 0px;
+    }
+</style>
+

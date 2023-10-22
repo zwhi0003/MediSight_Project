@@ -38,9 +38,9 @@
                         @booking.Time
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = booking.BookingId }) |
-                        @Html.ActionLink("Details", "Details", new { id = booking.BookingId }) |
-                        @Html.ActionLink("Delete", "Delete", new { id = booking.BookingId })
+                        @Html.ActionLink("Edit", "Edit", new { @class = "btn btn-primary", id = booking.BookingId }) |
+                        @Html.ActionLink("Details", "Details", new { @class = "btn btn-primary", id = booking.BookingId }) |
+                        @Html.ActionLink("Delete", "Delete", new { @class = "btn btn-primary", id = booking.BookingId })
                     </td>
                 </tr>
             }

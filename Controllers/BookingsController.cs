@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using MediSight_Project.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using SendGrid.Helpers.Mail.Model;
 
 namespace MediSight_Project.Controllers
 {
@@ -21,7 +20,9 @@ namespace MediSight_Project.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        private SendGridService es = new SendGridService();
+        private BrevoService es = new BrevoService();
+
+        private SendGridService sendGridService = new SendGridService();
 
         private List<TimeSpan> possibleBookingTimes = new List<TimeSpan>
                 {
@@ -37,7 +38,7 @@ namespace MediSight_Project.Controllers
                 };
 
         // GET: Bookings
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Practitioner")]
         public ActionResult Index()
         {
 
@@ -46,14 +47,14 @@ namespace MediSight_Project.Controllers
 
             foreach (var booking in bookings)
             {
-                var user = db.Users.Find(booking.UserId); 
+                var user = db.Users.Find(booking.UserId);
                 if (user != null)
                 {
                     userNames[booking.UserId] = user.UserName;
                 }
                 else
                 {
-                    userNames[booking.UserId] = "User Not Found"; 
+                    userNames[booking.UserId] = "User Not Found";
                 }
             }
             var viewModel = new BookingUserView
@@ -66,7 +67,7 @@ namespace MediSight_Project.Controllers
         }
 
         // GET: Bookings/Details/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Practitioner")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -82,6 +83,7 @@ namespace MediSight_Project.Controllers
         }
 
         // GET: Bookings/Create
+        [Authorize]
         public ActionResult Create(DateTime? desiredDate)
         {
             if (desiredDate.HasValue)
@@ -102,6 +104,7 @@ namespace MediSight_Project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> Create([Bind(Include = "BookingId,UserId,Time")] Booking booking)
         {
             MvcHandler.DisableMvcResponseHeader = true;
@@ -135,6 +138,7 @@ namespace MediSight_Project.Controllers
             return View(booking);
         }
 
+        [Authorize]
         private List<TimeSpan> GetAvailableTimesForDate(DateTime date)
         {
 
@@ -148,7 +152,7 @@ namespace MediSight_Project.Controllers
         }
 
         // GET: Bookings/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Practitioner")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -169,6 +173,7 @@ namespace MediSight_Project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Practitioner")]
         public ActionResult Edit([Bind(Include = "BookingId,UserId,Time")] Booking booking)
         {
             if (ModelState.IsValid)
@@ -181,6 +186,7 @@ namespace MediSight_Project.Controllers
         }
 
         // GET: Bookings/Delete/5
+        [Authorize(Roles = "Admin,Practitioner")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -198,6 +204,7 @@ namespace MediSight_Project.Controllers
         // POST: Bookings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Practitioner")]
         public ActionResult DeleteConfirmed(int id)
         {
             Booking booking = db.Bookings.Find(id);

@@ -6,69 +6,87 @@
 
 <h2>Make a Booking</h2>
 
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+<link href='https://unpkg.com/css.gg@2.0.0/icons/css/calendar.css' rel='stylesheet'>
 
 @using (Html.BeginForm("create", "Bookings", FormMethod.Post, new { id = "bookingForm" }))
 {
     @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <hr />
-    @{ 
-        var queryStringDate = string.Empty;
-        DateTime parsedDate;
-        if (DateTime.TryParse(Request.QueryString["desiredDate"], out parsedDate))
-        {
-            queryStringDate = parsedDate.ToString("yyyy-MM-dd");
+    <div class="form-horizontal">
+        <hr />
+        @{
+            var queryStringDate = string.Empty;
+            DateTime parsedDate;
+            if (DateTime.TryParse(Request.QueryString["desiredDate"], out parsedDate))
+            {
+                queryStringDate = parsedDate.ToString("yyyy-MM-dd");
+            }
         }
-    }
-    
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <!-- Date input -->
-    <div class="form-group">
-        @Html.LabelFor(model => model.Time, "Date", new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @if (!string.IsNullOrEmpty(queryStringDate))
-            {
-                @Html.TextBox("bookingDate", queryStringDate, new { @class = "form-control datepicker", id = "bookingDate", type = "date" })
-            }
-            else
-            {
-                @Html.TextBoxFor(model => model.Time, "{0:yyyy-MM-dd}", new { @class = "form-control datepicker", id = "bookingDate", type = "date", placeholder = "{0:yyyy-MM-dd}" })
-            }
-            @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
-        </div>
-    </div>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group">
-        @Html.Label("Time", new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @if (ViewBag.AvailableTimes != null)
-            {
-                @Html.DropDownList("BookingTime", ViewBag.AvailableTimes as SelectList, new { @class = "form-control", id = "bookingTime" })
+        <!-- Date input -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.Time, "Date", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @if (!string.IsNullOrEmpty(queryStringDate))
+                {
+                    <div class="input-group date">
+                        @Html.TextBox("bookingDate", queryStringDate, new { @class = "form-control datepicker", id = "bookingDate" })
+                        <div class="input-group-append">
+                            <button id="customButton" type="button" class="btn btn-secondary">
+                                <i class="gg-calendar"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="input-group date">
+                        @Html.TextBoxFor(model => model.Time, "yyyy-MM-dd", new { @class = "form-control datepicker", id = "bookingDate", placeholder = "YYYY-MM-DD" })
+                        <div class="input-group-append">
+                            <button id="customButton" type="button" class="btn btn-secondary">
+                                <i class="gg-calendar"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
                 @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
-            }
-            else
-            {
-                @Html.DropDownList("BookingTime", new SelectList(new List<SelectListItem>()), new { @class = "form-control", id = "bookingTime" })
-            }
             </div>
-    </div>
+        </div>
 
-    @Html.HiddenFor(model => model.Time, new { id = "combinedDateTime" })
+        <div class="form-group">
+            @Html.Label("Time", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @if (ViewBag.AvailableTimes != null)
+                {
+                    @Html.DropDownList("BookingTime", ViewBag.AvailableTimes as SelectList, new { @class = "form-control", id = "bookingTime" })
+                    @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
+                }
+                else
+                {
+                    @Html.DropDownList("BookingTime", new SelectList(new List<SelectListItem>()), new { @class = "form-control", id = "bookingTime" })
+                }
+            </div>
+        </div>
+
+        @Html.HiddenFor(model => model.Time, new { id = "combinedDateTime" })
 
     <div class="form-group">
-        @Html.LabelFor(model => model.UploadedFile, "Upload a Referral")
+        @Html.LabelFor(model => model.UploadedFile, "Upload a Referral", new { @class = "control-label col-md-2" })
         <input type="file" name="UploadedFile" />
     </div>
 
 
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-primary" id="submit"/>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-primary" id="submit" />
+            </div>
         </div>
     </div>
-</div>
 }
 
 <div>
@@ -85,15 +103,18 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('.datepicker').datepicker({
-                dateFormat: "dd/M/yy",
-                changeMonth: true,
-                changeYear: true,
-                yearRange: "-60:+0",
-                onSelect: function(dateText) {
-                    // Reload the page with the selected date to update available times
-                    window.location.href = '@Url.Action("Create")?desiredDate=' + dateText;
-                 }
+            dateFormat: "dd/M/yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-60:+0",
+            onSelect: function(dateText) {
+                // Reload the page with the selected date to update available times
+                window.location.href = '@Url.Action("Create")?desiredDate=' + dateText;
+             }
             });
+
+        $("#customButton").click(function () {
+            $("#bookingDate").datepicker("show");
         });
 
         document.getElementById("bookingForm").addEventListener("submit", function(e) {
@@ -102,6 +123,7 @@
         var combinedDateTime = new Date(dateValue + " " + timeValue);
         document.getElementById("combinedDateTime").value = combinedDateTime.toISOString();
 
+        });
     });
     </script>
 

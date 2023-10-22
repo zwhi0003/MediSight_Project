@@ -58,6 +58,7 @@ namespace MediSight_Project.Controllers
 
         //
         // GET: /Account/Index
+        [Authorize(Roles = "Admin")]
         public ActionResult Index(string selectedRole)
         {
             var users = db.Users

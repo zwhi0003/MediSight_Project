@@ -6,7 +6,8 @@
 }
 
 <h2>List of Accounts</h2>
-
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css"
+      rel="stylesheet" />
 
 @using (Html.BeginForm("Index", "Account", FormMethod.Get))
 {
@@ -16,13 +17,12 @@
     </div>
 }
 
-<table class="table">
+<table class="table table-bordered" style="width:100%;">
     <thead>
         <tr>
             <th>ID</th>
             <th>Username</th>
             <th>Email</th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -32,14 +32,24 @@
                 <td>@user.Id</td>
                 <td>@user.UserName</td>
                 <td>@user.Email</td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = user.Id }) |
-                    @Html.ActionLink("Details", "Details", new { id = user.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = user.Id })
-                </td>
             </tr>
         }
 
     </tbody>
 </table>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryui")
+    @Styles.Render("~/Content/cssjqryUi")
+
+    @Scripts.Render("~/Scripts/DataTables/jquery.dataTables.js")
+    @Scripts.Render("~/Scripts/DataTables/dataTables.bootstrap4.js")
+
+    <script>
+        $(document).ready(function () {
+            $('.table').DataTable();
+        });
+    </script>
+}
 
