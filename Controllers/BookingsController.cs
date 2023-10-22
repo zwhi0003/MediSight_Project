@@ -18,12 +18,12 @@ namespace MediSight_Project.Controllers
     [Authorize]
     public class BookingsController : Controller
     {
+        // database context
         private ApplicationDbContext db = new ApplicationDbContext();
-
+        // email services
         private BrevoService es = new BrevoService();
-
         private SendGridService sendGridService = new SendGridService();
-
+        // timespan
         private List<TimeSpan> possibleBookingTimes = new List<TimeSpan>
                 {
                     new TimeSpan(9, 0, 0),
@@ -41,7 +41,7 @@ namespace MediSight_Project.Controllers
         [Authorize(Roles = "Admin,Practitioner")]
         public ActionResult Index()
         {
-
+            // returns all the bookings and users for the bookings
             var bookings = db.Bookings.ToList();
             var userNames = new Dictionary<string, string>();
 
@@ -107,21 +107,24 @@ namespace MediSight_Project.Controllers
         [Authorize]
         public async Task<ActionResult> Create([Bind(Include = "BookingId,UserId,Time")] Booking booking)
         {
+            // disabling the response header for security
             MvcHandler.DisableMvcResponseHeader = true;
             if (ModelState.IsValid)
             {
                 string currentUserId = User.Identity.GetUserId();
                 booking.UserId = currentUserId;
-               
+               // allowing file upload for referrals
                 if (booking.UploadedFile != null && booking.UploadedFile.ContentLength > 0)
                 {
                     var fileName = Path.GetFileName(booking.UploadedFile.FileName);
                     var path = Path.Combine(Server.MapPath("~/UploadedFiles/"), fileName);
                     booking.UploadedFile.SaveAs(path);
                 }
+                // add the booking to the db
                 db.Bookings.Add(booking);
                 db.SaveChanges();
 
+                // send the email
                 string response = await es.SendEmail(
                     "MediSight", 
                     "MediSight@exammple.com", 
