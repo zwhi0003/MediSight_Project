@@ -38,7 +38,7 @@ namespace MediSight_Project.Controllers
 
         public ActionResult Index()
         {
-
+            MvcHandler.DisableMvcResponseHeader = true;
             var reviews = db.Reviews.ToList();
             var userNames = new Dictionary<string, string>();
             var totalRating = 0;
@@ -74,6 +74,7 @@ namespace MediSight_Project.Controllers
         [Authorize]
         public ActionResult Create([Bind(Include = "ReviewId,UserId,ReviewText,Time,ReviewRating")] Review review)
         {
+            MvcHandler.DisableMvcResponseHeader = true;
             string currentUserId = User.Identity.GetUserId();
             review.UserId = currentUserId;
             review.Time = DateTime.Now;

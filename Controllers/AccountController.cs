@@ -61,6 +61,7 @@ namespace MediSight_Project.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult Index(string selectedRole)
         {
+            // get all users
             var users = db.Users
         .Where(u => string.IsNullOrEmpty(selectedRole) ||
                     u.Roles.Join(db.Roles, userRole => userRole.RoleId, role => role.Id, (userRole, role) => role.Name).Contains(selectedRole))
